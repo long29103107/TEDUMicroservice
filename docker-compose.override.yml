@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+   sqlserverdb:
+      container_name: sqlserverdb
+      environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Passw0rd!
+      restart: always
+      ports:
+         - 1435:1433
+      volumes:
+         - sqlserver_data:/var/lib/sqlserver/data
+  
