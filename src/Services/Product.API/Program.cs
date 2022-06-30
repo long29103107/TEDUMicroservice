@@ -1,25 +1,23 @@
-using Serilog;
 using Common.Logging;
-using Product.API.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Product.API.Extensions;
 using Product.API.Persistence;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
 Log.Information("Starting Product Api up");
-
 try
 {
     builder.Host.UseSerilog(Serilogger.Configure);
-   
-    //Add config host
-    builder.Host.AddAppConfiguration();
-
-    //Add service
+    builder.Host.AddAppConfigurations();
     builder.Services.AddInfrastructure(builder.Configuration);
 
-    string connectionString = builder.Configuration.GetConnectionString("DefaultConnectionString");
-    builder.Services.AddDbContext<ProductContext>();
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    builder.Services.AddDbContext<ProductContext>(options =>
+    {
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    });
 
     var app = builder.Build();
     app.UseInfrastructure();
@@ -28,10 +26,10 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Unhanlded exception");
+    Log.Fatal(ex, "Unhandler exception");
 }
 finally
 {
-    Log.Information("Shut down product API complete");
+    Log.Information("Shut down Product API complete");
     Log.CloseAndFlush();
 }

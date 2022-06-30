@@ -1,21 +1,19 @@
 ﻿using Contracts.Domains.Interfaces;
-using Product.API.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using MySql.Data.MySqlClient;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Product.API.Entities;
 
 namespace Product.API.Persistence
 {
     public class ProductContext : DbContext
     {
-        public ProductContext(DbContextOptions<ProductContext> options) : base(options)
+        public ProductContext(DbContextOptions options) : base(options)
         {
-            
         }
 
         public DbSet<CatalogProduct> Products { get; set; }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var modified = ChangeTracker.Entries()
                 .Where(e => e.State == EntityState.Modified ||
@@ -23,28 +21,50 @@ namespace Product.API.Persistence
                     e.State == EntityState.Deleted);
 
             foreach(var item in modified)
-            { 
+            {
                 switch(item.State)
                 {
                     case EntityState.Added:
-                        if(item.Entity is IDateTracking addedEntity)
+                        if (item.Entity is IDateTracking addedEntity)
                         {
                             addedEntity.CreatedDate = DateTime.UtcNow;
                             item.State = EntityState.Added;
                         }
                         break;
+
                     case EntityState.Modified:
                         Entry(item.Entity).Property("Id").IsModified = false;
+
                         if (item.Entity is IDateTracking modifiedEntity)
                         {
                             modifiedEntity.LastModifiedDate = DateTime.UtcNow;
                             item.State = EntityState.Modified;
                         }
                         break;
-                }    
-            }
-
+                }   
+            }    
             return base.SaveChangesAsync(cancellationToken);
         }
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder options)
+        //{
+        //    if (!options.IsConfigured)
+        //    {
+        //        //var connectionString = configuration.GetConnectionString("Default");
+        //        var builder = new MySqlConnectionStringBuilder("Server=localhost:3306;Database=ProductDB;Uid=root;Pwd=;");
+
+        //        options.UseMySql(builder.ConnectionString,
+        //            ServerVersion.AutoDetect(builder.ConnectionString), e =>
+        //            {
+        //                e.MigrationsAssembly("Product.API");
+        //                e.SchemaBehavior(MySqlSchemaBehavior.Ignore);
+        //            });
+        //    }
+        //}
+
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
+        //}
     }
 }

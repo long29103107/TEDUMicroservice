@@ -19,7 +19,7 @@ services:
    productdb:
       container_name: productdb
       environment:
-         - MYSQL_ROOT_PASSWORD=Passw0rd!
+         - MYSQL_ROOT_PASSWORD=123456
       restart: always
       ports:
          - "3306:3306"

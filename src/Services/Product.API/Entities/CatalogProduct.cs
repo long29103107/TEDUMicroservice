@@ -7,19 +7,13 @@ namespace Product.API.Entities
     public class CatalogProduct : EntityAuditBase<int>
     {
         [Required]
-        [Column(TypeName = "varchar(50))")]
+        [Column("No", TypeName = "varchar(50)")]
         public string No { get; set; }
-
         [Required]
-        [Column(TypeName = "nvarchar(250))")]
+        [Column("Name", TypeName = "nvarchar(250)")]
         public string Name { get; set; }
-
-        [Column(TypeName = "nvarchar(max))")]
-        public string Summary { get; set; }
-
-        [Column(TypeName = "text")]
+        [Column("Description", TypeName = "nvarchar(max)")]
         public string Description { get; set; }
-
         public decimal Price { get; set; }
     }
 }

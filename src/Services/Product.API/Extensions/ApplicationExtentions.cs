@@ -1,6 +1,6 @@
 ﻿namespace Product.API.Extensions
 {
-    public static class ApplicationExtensions
+    public static class ApplicationExtentions
     {
         public static void UseInfrastructure(this IApplicationBuilder app)
         {
@@ -8,7 +8,7 @@
             app.UseSwaggerUI();
 
             app.UseRouting();
-            //app.UseHttpsRedirection(); //for production
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
